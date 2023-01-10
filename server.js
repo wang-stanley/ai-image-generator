@@ -17,16 +17,21 @@ app.use(cors());
 app.use(express.json()); // Handle incoming data in a JSON format
 
 app.post('/dream', async (req, res) => {
-  const prompt = req.body.prompt;
-
-  const aiResponse = await openai.createImage({
-    prompt,
-    n: 1,
-    size: '1024x1024',
-  });
-
-  const image = aiResponse.data.data[0].url;
-  res.send({ image });
+  try {
+    const prompt = req.body.prompt;
+  
+    const aiResponse = await openai.createImage({
+      prompt,
+      n: 1,
+      size: '1024x1024',
+    });
+  
+    const image = aiResponse.data.data[0].url;
+    res.send({ image });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error?.response.data.error.message || 'Something went wrong');
+  }
 });
 
 app.listen(8080, () => console.log('Make art on http://localhost:8080/dream'));
